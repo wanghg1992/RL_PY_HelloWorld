@@ -9,8 +9,14 @@ def add_layer(inputs, in_size, out_size, activation_function=None):
     # return outputs\
     Weights = tf.Variable(tf.random_normal([in_size,out_size]))
     biases = tf.Variable(tf.zeros([1,out_size])+0.1)
+    Wx=tf.matmul(inputs, Weights)
     Wx_plus_b=tf.matmul(inputs,Weights)+biases
-    return Wx_plus_b
+    print(Weights.shape,biases.shape,Wx.shape,Wx_plus_b.shape)
+    if activation_function is None:
+        outputs= Wx_plus_b
+    else:
+        outputs=activation_function(Wx_plus_b)
+    return outputs
 
 x_data = np.linspace(-1, 2, 400)[:, np.newaxis]
 noise = np.random.normal(0, 0.05, x_data.shape)
@@ -53,6 +59,8 @@ for i in range(1000):
     #train
     sess.run(train_step,feed_dict={xs:x_data,ys:y_data})
 
+    # sess.run(prediction)
+
     if i%10==0:
         # attempt to remove
         try:
@@ -61,5 +69,6 @@ for i in range(1000):
             pass
 
         prediction_value=sess.run(prediction,feed_dict={xs:x_data})
+        print(prediction_value.shape)
         lines=ax.plot(x_data,prediction_value,'r-',lw=5)
         plt.pause(0.1)
